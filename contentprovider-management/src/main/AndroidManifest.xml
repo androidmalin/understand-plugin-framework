@@ -1,8 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.example.weishu.contentprovider_management">
 
     <application
         android:name="com.example.weishu.contentprovider_management.UPFApplication"
+        tools:ignore="GoogleAppIndexingWarning"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -18,8 +20,8 @@
         <provider
             android:name="com.example.weishu.contentprovider_management.StubContentProvider"
             android:authorities="com.example.weishu.contentprovider_management.StubContentProvider"
-            android:process=":p"
-            android:exported="true" />
+            android:exported="true"
+            android:process=":p" />
     </application>
 
 </manifest>
