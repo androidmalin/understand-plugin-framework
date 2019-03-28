@@ -1,11 +1,12 @@
 package com.weishu.binder_hook.app;
 
+import android.annotation.SuppressLint;
+import android.os.IBinder;
+import android.util.Log;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
-import android.os.IBinder;
-import android.util.Log;
 
 /**
  * 由于ServiceManager里面的sCache里面存储的 IBinder类型基本上都是BinderProxy
@@ -25,6 +26,7 @@ import android.util.Log;
  * @author weishu
  * @date 16/2/15
  */
+@SuppressLint("PrivateApi")
 public class BinderProxyHookHandler implements InvocationHandler {
 
     private static final String TAG = "BinderProxyHookHandler";
@@ -72,7 +74,7 @@ public class BinderProxyHookHandler implements InvocationHandler {
                     // 检测有两个要求, 其一: 非空, 其二, IXXInterface类型。
                     // 所以, 其实返回的对象不需要是Binder对象, 我们把它当作普通的对象Hook掉就ok(拦截这个对象里面对于IXXInterface相关方法的调用)
                     // tks  jeremyhe_cn@qq.com
-                    new Class[] { this.iinterface },
+                    new Class[]{this.iinterface},
                     new BinderHookHandler(base, stub));
         }
 

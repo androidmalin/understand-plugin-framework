@@ -1,16 +1,18 @@
 package com.weishu.upf.ams_pms_hook.app;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageManager;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-
-import android.content.Context;
-import android.content.pm.PackageManager;
 
 /**
  * @author weishu
  * @date 16/3/7
  */
+@SuppressLint("PrivateApi")
 public final class HookHelper {
 
     public static void hookActivityManager() {
@@ -34,7 +36,7 @@ public final class HookHelper {
             // 创建一个这个对象的代理对象, 然后替换这个字段, 让我们的代理对象帮忙干活
             Class<?> iActivityManagerInterface = Class.forName("android.app.IActivityManager");
             Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                    new Class<?>[] { iActivityManagerInterface }, new HookHandler(rawIActivityManager));
+                    new Class<?>[]{iActivityManagerInterface}, new HookHandler(rawIActivityManager));
             mInstanceField.set(gDefault, proxy);
 
         } catch (Exception e) {
@@ -58,7 +60,7 @@ public final class HookHelper {
             // 准备好代理对象, 用来替换原始的对象
             Class<?> iPackageManagerInterface = Class.forName("android.content.pm.IPackageManager");
             Object proxy = Proxy.newProxyInstance(iPackageManagerInterface.getClassLoader(),
-                    new Class<?>[] { iPackageManagerInterface },
+                    new Class<?>[]{iPackageManagerInterface},
                     new HookHandler(sPackageManager));
 
             // 1. 替换掉ActivityThread里面的 sPackageManager 字段

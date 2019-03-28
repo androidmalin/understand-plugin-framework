@@ -13,6 +13,7 @@ import com.weishu.upf.dynamic_proxy_hook.app2.hook.HookHelper;
 /**
  * @author weishu
  * @date 16/1/28
+ * http://weishu.me/2016/01/28/understand-plugin-framework-proxy-hook/
  */
 public class MainActivity extends Activity {
     @Override

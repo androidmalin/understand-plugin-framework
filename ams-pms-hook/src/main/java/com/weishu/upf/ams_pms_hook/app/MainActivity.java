@@ -12,7 +12,7 @@ import android.view.View.OnClickListener;
  * @author weishu
  * @date 16/3/7
  */
-public class MainActivity extends Activity implements OnClickListener{
+public class MainActivity extends Activity implements OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

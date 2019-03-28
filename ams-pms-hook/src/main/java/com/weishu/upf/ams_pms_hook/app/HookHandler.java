@@ -1,10 +1,10 @@
 package com.weishu.upf.ams_pms_hook.app;
 
+import android.util.Log;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-
-import android.util.Log;
 
 /**
  * 一个简单的用来演示的动态代理对象 (PMS和AMS都使用这一个类)

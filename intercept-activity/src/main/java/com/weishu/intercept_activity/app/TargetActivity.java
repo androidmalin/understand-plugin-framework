@@ -1,5 +1,6 @@
 package com.weishu.intercept_activity.app;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.TextView;
  * <p/>
  * Created by weishu on 16/1/7.
  */
+@SuppressLint("SetTextI18n")
 public class TargetActivity extends Activity {
 
     private static final String TAG = "TargetActivity";
@@ -23,7 +25,6 @@ public class TargetActivity extends Activity {
         TextView tv = new TextView(this);
         tv.setText("TargetActivity 启动成功!!!");
         setContentView(tv);
-
     }
 
     @Override

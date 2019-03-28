@@ -1,5 +1,6 @@
 package com.weishu.binder_hook.app;
 
+import android.annotation.SuppressLint;
 import android.os.IBinder;
 
 import java.lang.reflect.Field;
@@ -11,6 +12,7 @@ import java.util.Map;
  * @author weishu
  * @date 16/2/15
  */
+@SuppressLint("PrivateApi")
 public class BinderHookHelper {
 
     public static void hookClipboardService() throws Exception {
@@ -29,7 +31,7 @@ public class BinderHookHelper {
         // Hook 掉这个Binder代理对象的 queryLocalInterface 方法
         // 然后在 queryLocalInterface 返回一个IInterface对象, hook掉我们感兴趣的方法即可.
         IBinder hookedBinder = (IBinder) Proxy.newProxyInstance(serviceManager.getClassLoader(),
-                new Class<?>[] { IBinder.class },
+                new Class<?>[]{IBinder.class},
                 new BinderProxyHookHandler(rawBinder));
 
         // 把这个hook过的Binder代理对象放进ServiceManager的cache里面

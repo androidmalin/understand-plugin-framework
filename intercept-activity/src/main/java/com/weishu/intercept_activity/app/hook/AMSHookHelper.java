@@ -4,12 +4,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Handler;
 
 /**
  * @author weishu
  * @date 16/3/21
  */
+@SuppressLint("PrivateApi")
 public class AMSHookHelper {
 
     public static final String EXTRA_TARGET_INTENT = "extra_target_intent";

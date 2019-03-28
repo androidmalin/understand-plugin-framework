@@ -1,10 +1,10 @@
 package com.weishu.intercept_activity.app.hook;
 
-import java.lang.reflect.Field;
-
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
+
+import java.lang.reflect.Field;
 
 /**
  * @author weishu

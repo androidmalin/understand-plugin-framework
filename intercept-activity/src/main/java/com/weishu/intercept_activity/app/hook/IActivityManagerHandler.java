@@ -1,19 +1,19 @@
 package com.weishu.intercept_activity.app.hook;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-
 import android.content.ComponentName;
 import android.content.Intent;
 import android.util.Log;
 
 import com.weishu.intercept_activity.app.StubActivity;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+
 /**
  * @author weishu
  * @dete 16/1/7.
  */
-/* package */ class IActivityManagerHandler implements InvocationHandler {
+class IActivityManagerHandler implements InvocationHandler {
 
     private static final String TAG = "IActivityManagerHandler";
 

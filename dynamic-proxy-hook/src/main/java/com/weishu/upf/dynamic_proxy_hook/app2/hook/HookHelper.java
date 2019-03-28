@@ -1,5 +1,6 @@
 package com.weishu.upf.dynamic_proxy_hook.app2.hook;
 
+import android.annotation.SuppressLint;
 import android.app.Instrumentation;
 
 import java.lang.reflect.Field;
@@ -9,9 +10,10 @@ import java.lang.reflect.Method;
  * @author weishu
  * @date 16/1/28
  */
+@SuppressLint("PrivateApi")
 public class HookHelper {
 
-    public static void attachContext() throws Exception{
+    public static void attachContext() throws Exception {
         // 先获取到当前的ActivityThread对象
         Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
         Method currentActivityThreadMethod = activityThreadClass.getDeclaredMethod("currentActivityThread");
