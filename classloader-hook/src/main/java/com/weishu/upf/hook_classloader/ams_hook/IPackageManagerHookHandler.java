@@ -1,15 +1,15 @@
 package com.weishu.upf.hook_classloader.ams_hook;
 
+import android.content.pm.PackageInfo;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-
-import android.content.pm.PackageInfo;
 
 /**
  * @author weishu
  * @date 16/3/29
  */
-public class IPackageManagerHookHandler implements InvocationHandler{
+public class IPackageManagerHookHandler implements InvocationHandler {
 
     private Object mBase;
 

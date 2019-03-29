@@ -1,8 +1,5 @@
 package com.weishu.upf.service_management.app.hook;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-
 import android.content.ComponentName;
 import android.content.Intent;
 import android.text.TextUtils;
@@ -12,6 +9,9 @@ import android.util.Pair;
 import com.weishu.upf.service_management.app.ProxyService;
 import com.weishu.upf.service_management.app.ServiceManager;
 import com.weishu.upf.service_management.app.UPFApplication;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
  * @author weishu

@@ -1,5 +1,10 @@
 package com.weishu.upf.hook_classloader.classloder_hook;
 
+import android.annotation.SuppressLint;
+import android.content.pm.ApplicationInfo;
+
+import com.weishu.upf.hook_classloader.Utils;
+
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
@@ -8,14 +13,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import android.content.pm.ApplicationInfo;
-
-import com.weishu.upf.hook_classloader.Utils;
-
 /**
  * @author weishu
  * @date 16/3/29
  */
+@SuppressLint("PrivateApi")
 public class LoadedApkClassLoaderHookHelper {
 
     public static Map<String, Object> sLoadedApk = new HashMap<String, Object>();

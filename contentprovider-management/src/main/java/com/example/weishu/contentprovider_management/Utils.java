@@ -45,7 +45,6 @@ public class Utils {
     }
 
 
-
     // --------------------------------------------------------------------------
     private static void closeSilently(Closeable closeable) {
         if (closeable == null) {

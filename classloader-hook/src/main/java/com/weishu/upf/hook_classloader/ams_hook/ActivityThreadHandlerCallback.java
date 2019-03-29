@@ -1,18 +1,20 @@
 package com.weishu.upf.hook_classloader.ams_hook;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Handler;
 import android.os.Message;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 /**
  * @author weishu
  * @date 16/1/7
  */
+@SuppressLint("PrivateApi")
 /* package */ class ActivityThreadHandlerCallback implements Handler.Callback {
 
     Handler mBase;
@@ -94,7 +96,7 @@ import android.os.Message;
         // 准备好代理对象, 用来替换原始的对象
         Class<?> iPackageManagerInterface = Class.forName("android.content.pm.IPackageManager");
         Object proxy = Proxy.newProxyInstance(iPackageManagerInterface.getClassLoader(),
-                new Class<?>[] { iPackageManagerInterface },
+                new Class<?>[]{iPackageManagerInterface},
                 new IPackageManagerHookHandler(sPackageManager));
 
         // 1. 替换掉ActivityThread里面的 sPackageManager 字段

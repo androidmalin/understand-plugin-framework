@@ -1,12 +1,12 @@
 package com.weishu.upf.service_management.app;
 
-import java.io.File;
-
 import android.app.Application;
 import android.content.Context;
 
 import com.weishu.upf.service_management.app.hook.AMSHookHelper;
 import com.weishu.upf.service_management.app.hook.BaseDexClassLoaderHookHelper;
+
+import java.io.File;
 
 /**
  * 这个类只是为了方便获取全局Context的.

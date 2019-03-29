@@ -1,13 +1,13 @@
 package com.weishu.upf.hook_classloader;
 
+import android.content.Context;
+import android.content.res.AssetManager;
+
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import android.content.Context;
-import android.content.res.AssetManager;
 
 /**
  * @author weishu

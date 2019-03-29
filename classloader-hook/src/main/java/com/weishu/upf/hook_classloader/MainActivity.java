@@ -1,7 +1,6 @@
 package com.weishu.upf.hook_classloader;
 
-import java.io.File;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,6 +13,8 @@ import android.widget.Button;
 import com.weishu.upf.hook_classloader.ams_hook.AMSHookHelper;
 import com.weishu.upf.hook_classloader.classloder_hook.BaseDexClassLoaderHookHelper;
 import com.weishu.upf.hook_classloader.classloder_hook.LoadedApkClassLoaderHookHelper;
+
+import java.io.File;
 
 /**
  * @author weishu
@@ -29,6 +30,7 @@ public class MainActivity extends Activity {
 
     private static final int HOOK_METHOD = CUSTOM_CLASS_LOADER;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

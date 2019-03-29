@@ -72,7 +72,7 @@ public class AMSHookHelper {
         // 创建一个这个对象的代理对象, 然后替换这个字段, 让我们的代理对象帮忙干活
         Class<?> iActivityManagerInterface = Class.forName("android.app.IActivityManager");
         Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                new Class<?>[] { iActivityManagerInterface }, new IActivityManagerHandler(rawIActivityManager));
+                new Class<?>[]{iActivityManagerInterface}, new IActivityManagerHandler(rawIActivityManager));
         mInstanceField.set(gDefault, proxy);
     }
 

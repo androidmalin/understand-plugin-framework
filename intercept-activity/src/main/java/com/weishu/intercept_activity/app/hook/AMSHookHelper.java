@@ -1,12 +1,12 @@
 package com.weishu.intercept_activity.app.hook;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Proxy;
-
 import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Handler;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Proxy;
 
 /**
  * @author weishu
@@ -59,13 +59,13 @@ public class AMSHookHelper {
         //            39}
         //        40
 
-         Field gDefaultField =null;
+        Field gDefaultField = null;
         if (Build.VERSION.SDK_INT >= 26) {
             Class<?> activityManager = Class.forName("android.app.ActivityManager");
-             gDefaultField = activityManager.getDeclaredField("IActivityManagerSingleton");
-        }else{
+            gDefaultField = activityManager.getDeclaredField("IActivityManagerSingleton");
+        } else {
             Class<?> activityManagerNativeClass = Class.forName("android.app.ActivityManagerNative");
-             gDefaultField = activityManagerNativeClass.getDeclaredField("gDefault");
+            gDefaultField = activityManagerNativeClass.getDeclaredField("gDefault");
         }
         gDefaultField.setAccessible(true);
         gDefaultField.setAccessible(true);
@@ -83,7 +83,7 @@ public class AMSHookHelper {
         // 创建一个这个对象的代理对象, 然后替换这个字段, 让我们的代理对象帮忙干活
         Class<?> iActivityManagerInterface = Class.forName("android.app.IActivityManager");
         Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                new Class<?>[] { iActivityManagerInterface }, new IActivityManagerHandler(rawIActivityManager));
+                new Class<?>[]{iActivityManagerInterface}, new IActivityManagerHandler(rawIActivityManager));
         mInstanceField.set(gDefault, proxy);
 
     }

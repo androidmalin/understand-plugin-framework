@@ -1,13 +1,6 @@
 package com.weishu.upf.service_management.app;
 
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,10 +13,20 @@ import android.util.Log;
 
 import com.weishu.upf.service_management.app.hook.AMSHookHelper;
 
+import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author weishu
  * @date 16/5/10
  */
+@SuppressLint("PrivateApi")
+
 public final class ServiceManager {
 
     private static final String TAG = "ServiceManager";
@@ -44,6 +47,7 @@ public final class ServiceManager {
 
     /**
      * 启动某个插件Service; 如果Service还没有启动, 那么会创建新的插件Service
+     *
      * @param proxyIntent
      * @param startId
      */
@@ -72,6 +76,7 @@ public final class ServiceManager {
 
     /**
      * 停止某个插件Service, 当全部的插件Service都停止之后, ProxyService也会停止
+     *
      * @param targetIntent
      * @return
      */
@@ -99,6 +104,7 @@ public final class ServiceManager {
 
     /**
      * 选择匹配的ServiceInfo
+     *
      * @param pluginIntent 插件的Intent
      * @return
      */
@@ -113,6 +119,7 @@ public final class ServiceManager {
 
     /**
      * 通过ActivityThread的handleCreateService方法创建出Service对象
+     *
      * @param serviceInfo 插件的ServiceInfo
      * @throws Exception
      */
@@ -121,7 +128,7 @@ public final class ServiceManager {
 
         // 创建CreateServiceData对象, 用来传递给ActivityThread的handleCreateService 当作参数
         Class<?> createServiceDataClass = Class.forName("android.app.ActivityThread$CreateServiceData");
-        Constructor<?> constructor  = createServiceDataClass.getDeclaredConstructor();
+        Constructor<?> constructor = createServiceDataClass.getDeclaredConstructor();
         constructor.setAccessible(true);
         Object createServiceData = constructor.newInstance();
 
@@ -172,6 +179,7 @@ public final class ServiceManager {
     /**
      * 解析Apk文件中的 <service>, 并存储起来
      * 主要是调用PackageParser类的generateServiceInfo方法
+     *
      * @param apkFile 插件对应的apk文件
      * @throws Exception 解析出错或者反射调用出错, 均会抛出异常
      */

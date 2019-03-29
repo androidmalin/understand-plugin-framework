@@ -1,5 +1,6 @@
 package com.example.weishu.contentprovider_management;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
@@ -15,6 +16,7 @@ import java.util.List;
  * @author weishu
  * @date 16/7/8.
  */
+@SuppressLint("PrivateApi")
 public class ProviderHelper {
 
     /**

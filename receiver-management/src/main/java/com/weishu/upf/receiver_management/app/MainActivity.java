@@ -1,7 +1,5 @@
 package com.weishu.upf.receiver_management.app;
 
-import java.io.File;
-
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,6 +10,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.io.File;
 
 /**
  * @author weishu

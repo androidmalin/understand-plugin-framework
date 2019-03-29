@@ -1,14 +1,14 @@
 package com.weishu.upf.hook_classloader.ams_hook;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-
 import android.content.ComponentName;
 import android.content.Intent;
 import android.util.Log;
 
 import com.weishu.upf.hook_classloader.StubActivity;
 import com.weishu.upf.hook_classloader.UPFApplication;
+
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
  * @author weishu

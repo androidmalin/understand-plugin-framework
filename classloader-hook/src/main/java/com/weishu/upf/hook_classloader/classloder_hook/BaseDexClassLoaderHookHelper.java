@@ -16,9 +16,10 @@ import dalvik.system.DexFile;
  * 查看源码得知,这个BaseDexClassLoader加载代码根据一个叫做
  * dexElements的数组进行, 因此我们把包含代码的dex文件插入这个数组
  * 系统的classLoader就能帮助我们找到这个类
- *
+ * <p>
  * 这个类用来进行对于BaseDexClassLoader的Hook
  * 类名太长, 不要吐槽.
+ *
  * @author weishu
  * @date 16/3/28
  */
@@ -46,7 +47,7 @@ public final class BaseDexClassLoaderHookHelper {
         Constructor<?> constructor = elementClass.getConstructor(File.class, boolean.class, File.class, DexFile.class);
         Object o = constructor.newInstance(apkFile, false, apkFile, DexFile.loadDex(apkFile.getCanonicalPath(), optDexFile.getAbsolutePath(), 0));
 
-        Object[] toAddElementArray = new Object[] { o };
+        Object[] toAddElementArray = new Object[]{o};
         // 把原始的elements复制进去
         System.arraycopy(dexElements, 0, newElements, 0, dexElements.length);
         // 插件的那个element复制进去

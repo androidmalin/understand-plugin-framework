@@ -4,11 +4,11 @@
 
     <application
         android:name="com.example.weishu.contentprovider_management.UPFApplication"
-        tools:ignore="GoogleAppIndexingWarning"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        tools:ignore="GoogleAppIndexingWarning">
 
         <activity android:name="com.example.weishu.contentprovider_management.MainActivity">
             <intent-filter>
