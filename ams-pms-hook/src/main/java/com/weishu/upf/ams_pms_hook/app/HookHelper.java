@@ -35,8 +35,10 @@ public final class HookHelper {
 
             // 创建一个这个对象的代理对象, 然后替换这个字段, 让我们的代理对象帮忙干活
             Class<?> iActivityManagerInterface = Class.forName("android.app.IActivityManager");
-            Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-                    new Class<?>[]{iActivityManagerInterface}, new HookHandler(rawIActivityManager));
+            Object proxy = Proxy.newProxyInstance(
+                    Thread.currentThread().getContextClassLoader(),
+                    new Class<?>[]{iActivityManagerInterface},
+                    new HookHandler(rawIActivityManager));
             mInstanceField.set(gDefault, proxy);
 
         } catch (Exception e) {
@@ -59,7 +61,8 @@ public final class HookHelper {
 
             // 准备好代理对象, 用来替换原始的对象
             Class<?> iPackageManagerInterface = Class.forName("android.content.pm.IPackageManager");
-            Object proxy = Proxy.newProxyInstance(iPackageManagerInterface.getClassLoader(),
+            Object proxy = Proxy.newProxyInstance(
+                    iPackageManagerInterface.getClassLoader(),
                     new Class<?>[]{iPackageManagerInterface},
                     new HookHandler(sPackageManager));
 

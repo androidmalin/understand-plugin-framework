@@ -14,3 +14,4 @@ proguard/
 .navigation/
 captures/
 *.iml
+*.sh
