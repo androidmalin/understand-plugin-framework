@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 // 启动目标Activity; 注意这个Activity是没有在AndroidManifest.xml中显式声明的
                 // 但是调用者并不需要知道, 就像一个普通的Activity一样
-                startActivity(new Intent(MainActivity.this, TargetActivity.class));
+                startActivity(new Intent(MainActivity.this, StubActivity.class));
             }
         });
         setContentView(button);

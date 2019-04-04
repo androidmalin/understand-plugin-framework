@@ -17,31 +17,27 @@ public class Utils {
 
     /**
      * 把Assets里面得文件复制到 /data/data/files 目录下
-     *
-     * @param context
-     * @param sourceName
      */
     public static void extractAssets(Context context, String sourceName) {
         AssetManager am = context.getAssets();
-        InputStream is = null;
+        InputStream inputStream = null;
         FileOutputStream fos = null;
         try {
-            is = am.open(sourceName);
+            inputStream = am.open(sourceName);
             File extractFile = context.getFileStreamPath(sourceName);
             fos = new FileOutputStream(extractFile);
             byte[] buffer = new byte[1024];
-            int count = 0;
-            while ((count = is.read(buffer)) > 0) {
+            int count;
+            while ((count = inputStream.read(buffer)) > 0) {
                 fos.write(buffer, 0, count);
             }
             fos.flush();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            closeSilently(is);
+            closeSilently(inputStream);
             closeSilently(fos);
         }
-
     }
 
     /**
@@ -58,7 +54,6 @@ public class Utils {
         return enforceDirExists(new File(getPluginBaseDir(packageName), "lib"));
     }
 
-    // --------------------------------------------------------------------------
     private static void closeSilently(Closeable closeable) {
         if (closeable == null) {
             return;
