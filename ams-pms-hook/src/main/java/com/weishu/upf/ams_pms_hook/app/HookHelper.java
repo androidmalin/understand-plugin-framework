@@ -41,8 +41,8 @@ public final class HookHelper {
                     new HookHandler(rawIActivityManager));
             mInstanceField.set(gDefault, proxy);
 
-        } catch (Exception e) {
-            throw new RuntimeException("Hook Failed", e);
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
 
     }
@@ -74,8 +74,8 @@ public final class HookHelper {
             Field mPmField = pm.getClass().getDeclaredField("mPM");
             mPmField.setAccessible(true);
             mPmField.set(pm, proxy);
-        } catch (Exception e) {
-            throw new RuntimeException("hook failed", e);
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
     }
 }

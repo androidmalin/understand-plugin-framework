@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -19,10 +20,9 @@ import java.lang.reflect.Proxy;
 @SuppressLint("PrivateApi")
 class ActivityThreadHandlerCallback implements Handler.Callback {
 
-    Handler mBase;
+    private static final String TAG = "ActivityThreadHand";
 
-    public ActivityThreadHandlerCallback(Handler base) {
-        mBase = base;
+    public ActivityThreadHandlerCallback() {
     }
 
     @Override
@@ -35,15 +35,13 @@ class ActivityThreadHandlerCallback implements Handler.Callback {
                 handleLaunchActivity(msg);
                 break;
         }
-
-        mBase.handleMessage(msg);
-        return true;
+        return false;
     }
 
     private void handleLaunchActivity(Message msg) {
         // 这里简单起见,直接取出TargetActivity;
 
-        Object obj = msg.obj;
+        Object activityClientRecordObj = msg.obj;
         // 根据源码:
         // 这个对象是 ActivityClientRecord 类型
         // 我们修改它的intent字段为我们原来保存的即可.
@@ -58,23 +56,25 @@ class ActivityThreadHandlerCallback implements Handler.Callback {
 
         try {
             // 把替身恢复成真身
-            Field intent = obj.getClass().getDeclaredField("intent");
+            //1.获取安全的Intent
+            Field intent = activityClientRecordObj.getClass().getDeclaredField("intent");
             intent.setAccessible(true);
-            Intent raw = (Intent) intent.get(obj);
+            Intent safeIntent = (Intent) intent.get(activityClientRecordObj);
 
-            Intent target = raw.getParcelableExtra(AMSHookHelper.EXTRA_TARGET_INTENT);
-            raw.setComponent(target.getComponent());
+            //获取原始Intent
+            Intent target = safeIntent.getParcelableExtra(AMSHookHelper.EXTRA_TARGET_INTENT);
+            safeIntent.setComponent(target.getComponent());
 
-            Field activityInfoField = obj.getClass().getDeclaredField("activityInfo");
+            Field activityInfoField = activityClientRecordObj.getClass().getDeclaredField("activityInfo");
             activityInfoField.setAccessible(true);
 
             // 根据 getPackageInfo 根据这个 包名获取 LoadedApk的信息; 因此这里我们需要手动填上, 从而能够命中缓存
-            ActivityInfo activityInfo = (ActivityInfo) activityInfoField.get(obj);
+            ActivityInfo activityInfo = (ActivityInfo) activityInfoField.get(activityClientRecordObj);
             activityInfo.applicationInfo.packageName = target.getPackage() == null ? target.getComponent().getPackageName() : target.getPackage();
 
             hookPackageManager();
-        } catch (Exception e) {
-            throw new RuntimeException("hook launch activity failed", e);
+        } catch (Throwable e) {
+            Log.d(TAG,e.getMessage(),e);
         }
     }
 

@@ -2,11 +2,11 @@ package com.weishu.upf.ams_pms_hook.app;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Toast;
 
 /**
  * @author weishu
@@ -14,13 +14,54 @@ import android.view.View.OnClickListener;
  */
 public class MainActivity extends Activity implements OnClickListener {
 
+    private static final String TAG = "NewAPP";
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "onDestroy");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop");
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
-
-        findViewById(R.id.btn1).setOnClickListener(this);
-        findViewById(R.id.btn2).setOnClickListener(this);
+        Log.d(TAG, "onCreate");
+        try {
+            setContentView(R.layout.main);
+        } catch (Throwable throwable) {
+            Log.e(TAG, throwable.getMessage(), throwable);
+        }
+        try {
+            findViewById(R.id.btn1).setOnClickListener(this);
+            findViewById(R.id.btn2).setOnClickListener(this);
+        } catch (Throwable throwable) {
+            Log.e(TAG, throwable.getMessage(), throwable);
+        }
     }
 
     // 这个方法比onCreate调用早; 在这里Hook比较好.
@@ -35,16 +76,11 @@ public class MainActivity extends Activity implements OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn1:
-
-                // 测试AMS HOOK (调用其相关方法)
-                Uri uri = Uri.parse("http://wwww.baidu.com");
-                Intent t = new Intent(Intent.ACTION_VIEW);
-                t.setData(uri);
-                startActivity(t);
+                Toast.makeText(getApplicationContext(), "one", Toast.LENGTH_LONG).show();
                 break;
             case R.id.btn2:
-                // 测试PMS HOOK (调用其相关方法)
-                getPackageManager().getInstalledApplications(0);
+                //getPackageManager().getInstalledApplications(0);
+                Toast.makeText(getApplicationContext(), "two", Toast.LENGTH_LONG).show();
                 break;
         }
     }

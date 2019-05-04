@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +17,7 @@ import com.weishu.upf.hook_classloader.classloder_hook.BaseDexClassLoaderHookHel
 import com.weishu.upf.hook_classloader.classloder_hook.LoadedApkClassLoaderHookHelper;
 
 import java.io.File;
+import java.lang.reflect.Method;
 
 /**
  * @author weishu
@@ -44,16 +47,16 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 try {
-                    Intent t = new Intent();
+                    Intent intent = new Intent();
                     if (HOOK_METHOD == PATCH_BASE_CLASS_LOADER) {
-                        t.setComponent(new ComponentName("com.weishu.upf.dynamic_proxy_hook.app2",
+                        intent.setComponent(new ComponentName("com.weishu.upf.dynamic_proxy_hook.app2",
                                 "com.weishu.upf.dynamic_proxy_hook.app2.MainActivity"));
                     } else {
-                        t.setComponent(new ComponentName(
+                        intent.setComponent(new ComponentName(
                                 "com.weishu.upf.ams_pms_hook.app",
                                 "com.weishu.upf.ams_pms_hook.app.MainActivity"));
                     }
-                    startActivity(t);
+                    startActivity(intent);
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
@@ -65,10 +68,7 @@ public class MainActivity extends Activity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
         try {
-            Utils.extractAssets(newBase, "dynamic-proxy-hook.apk");
             Utils.extractAssets(newBase, "ams-pms-hook.apk");
-            Utils.extractAssets(newBase, "test.apk");
-
             if (HOOK_METHOD == PATCH_BASE_CLASS_LOADER) {
                 File dexFile = getFileStreamPath("test.apk");
                 File optDexFile = getFileStreamPath("test.dex");
@@ -79,10 +79,48 @@ public class MainActivity extends Activity {
 
             AMSHookHelper.hookActivityManagerNative();
             AMSHookHelper.hookActivityThreadHandler();
-
+//            File file = getFileStreamPath("ams-pms-hook.apk");
+//            loadResources(file.getAbsolutePath());
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
 
+
+    private AssetManager mAssetManager = null;//资源管理器
+    private Resources mResources;//资源
+    private Resources.Theme mTheme;//主题
+
+    protected void loadResources(String dexPath) {
+        try {
+            AssetManager assetManager = AssetManager.class.newInstance();
+            Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
+            addAssetPath.invoke(assetManager, dexPath);
+            mAssetManager = assetManager;
+        } catch (Exception e) {
+            Log.i("inject", "loadResource error:" + Log.getStackTraceString(e));
+            e.printStackTrace();
+        }
+        Resources superRes = super.getResources();
+        superRes.getDisplayMetrics();
+        superRes.getConfiguration();
+        mResources = new Resources(mAssetManager, superRes.getDisplayMetrics(), superRes.getConfiguration());
+        mTheme = mResources.newTheme();
+        mTheme.setTo(super.getTheme());
+    }
+
+    @Override
+    public AssetManager getAssets() {
+        return mAssetManager == null ? super.getAssets() : mAssetManager;
+    }
+
+    @Override
+    public Resources getResources() {
+        return mResources == null ? super.getResources() : mResources;
+    }
+
+    @Override
+    public Resources.Theme getTheme() {
+        return mTheme == null ? super.getTheme() : mTheme;
+    }
 }
