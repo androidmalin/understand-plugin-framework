@@ -18,6 +18,7 @@ import java.util.Map;
 /**
  * @author weishu
  * @date 16/4/7
+ * >=5.0
  */
 @SuppressWarnings("JavaReflectionMemberAccess")
 @SuppressLint({"PrivateApi", "unchecked"})
@@ -100,6 +101,7 @@ public final class ReceiverHelper {
             ActivityInfo info = (ActivityInfo) generateReceiverInfo.invoke(packageParser, receiver, 0, defaultUserState, userId);
 
             //17.PackageParser$Activity中获取intents字段的值,既public final ArrayList<II> intents;
+            //List<? extends IntentFilter>
             List<? extends IntentFilter> filters = (List<? extends IntentFilter>) intentsField.get(receiver);
             sCache.put(info, filters);
         }

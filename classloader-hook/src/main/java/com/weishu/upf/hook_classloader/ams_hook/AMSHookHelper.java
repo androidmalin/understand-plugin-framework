@@ -23,12 +23,6 @@ public class AMSHookHelper {
      * 主要完成的操作是  "把真正要启动的Activity临时替换为在AndroidManifest.xml中声明的替身Activity"
      * <p/>
      * 进而骗过AMS
-     *
-     * @throws ClassNotFoundException
-     * @throws NoSuchMethodException
-     * @throws InvocationTargetException
-     * @throws IllegalAccessException
-     * @throws NoSuchFieldException
      */
     public static void hookActivityManagerNative() throws ClassNotFoundException,
             NoSuchMethodException, InvocationTargetException,

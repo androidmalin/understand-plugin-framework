@@ -49,7 +49,8 @@ public class MainActivity extends Activity {
                         t.setComponent(new ComponentName("com.weishu.upf.dynamic_proxy_hook.app2",
                                 "com.weishu.upf.dynamic_proxy_hook.app2.MainActivity"));
                     } else {
-                        t.setComponent(new ComponentName("com.weishu.upf.ams_pms_hook.app",
+                        t.setComponent(new ComponentName(
+                                "com.weishu.upf.ams_pms_hook.app",
                                 "com.weishu.upf.ams_pms_hook.app.MainActivity"));
                     }
                     startActivity(t);

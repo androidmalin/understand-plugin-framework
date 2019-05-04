@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -30,7 +31,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-        initData();
+        //initData();
     }
 
     private void initData() {
@@ -46,6 +47,20 @@ public class MainActivity extends Activity {
         registerReceiver(mReceiver, new IntentFilter(ACTION));
     }
 
+    private void test() {
+        Utils.extractAssets(this, "app-debug.apk");
+        File testPlugin = getFileStreamPath("app-debug.apk");
+        try {
+            ApplicationInfo applicationInfo = ApkUtils.getApplicationInfo(testPlugin, this);
+            String name = applicationInfo.packageName;
+
+            System.out.println(name);
+            ApkUtils.getActivityInfos(testPlugin, this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private void initView() {
         Button button = new Button(this);
         setContentView(button);
@@ -53,8 +68,10 @@ public class MainActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "插件插件!收到请回答!!", Toast.LENGTH_SHORT).show();
-                sendBroadcast(new Intent("com.weishu.upf.demo.app2.Receiver1"));
+                initData();
+                //test();
+                //Toast.makeText(getApplicationContext(), "插件插件!收到请回答!!", Toast.LENGTH_SHORT).show();
+                //sendBroadcast(new Intent("com.weishu.upf.demo.app2.Receiver1"));
             }
         });
     }
