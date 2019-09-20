@@ -3,6 +3,7 @@ package com.weishu.upf.hook_classloader.ams_hook;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
@@ -33,16 +34,44 @@ public class AMSHookHelper {
      */
     public static void hookActivityManagerNative() throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
 
-        //1.ActivityManagerNative
-        Class<?> activityManagerNativeClass = Class.forName("android.app.ActivityManagerNative");
 
-        //2.gDefault
-        //private static final Singleton<IActivityManager> gDefault = new Singleton<IActivityManager>() {}
-        Field gDefaultField = activityManagerNativeClass.getDeclaredField("gDefault");
-        gDefaultField.setAccessible(true);
+        Object gDefault;
+        if (Build.VERSION.SDK_INT >= 26) {
+            //1.获取ActivityManager的Class对象
+            //package android.app
+            //public class ActivityManager
+            Class<?> activityManagerClass = Class.forName("android.app.ActivityManager");
 
-        //3.获取Singleton<IActivityManager> gDefault实例
-        Object gDefault = gDefaultField.get(null);
+            //2.获取ActivityManager的私有静态属性IActivityManagerSingleton
+            //private static final Singleton<IActivityManager> IActivityManagerSingleton
+            Field iActivityManagerSingletonField = activityManagerClass.getDeclaredField("IActivityManagerSingleton");
+
+            //3.取消Java的权限检查
+            iActivityManagerSingletonField.setAccessible(true);
+
+            //4.获取IActivityManagerSingleton的实例对象
+            //private static final Singleton<IActivityManager> IActivityManagerSingleton
+            //所有静态对象的反射可以通过传null获取,如果是非静态必须传实例
+            gDefault = iActivityManagerSingletonField.get(null);
+        } else {
+            //1.获取ActivityManagerNative的Class对象
+            //package android.app
+            //public abstract class ActivityManagerNative
+            Class<?> activityManagerNativeClass = Class.forName("android.app.ActivityManagerNative");
+
+            //2.获取 ActivityManagerNative的 私有属性gDefault
+            // private static final Singleton<IActivityManager> gDefault
+            Field singletonField = activityManagerNativeClass.getDeclaredField("gDefault");
+
+            //3.对私有属性gDefault,解除私有限定
+            singletonField.setAccessible(true);
+
+            //4.获得gDefaultField中对应的属性值(被static修饰了),既得到Singleton<IActivityManager>对象的实例
+            //所有静态对象的反射可以通过传null获取
+            //private static final Singleton<IActivityManager> gDefault
+            gDefault = singletonField.get(null);
+        }
+
 
         //4. gDefault是一个 android.util.Singleton对象; 我们取出这个单例里面的字段
         Class<?> singleton = Class.forName("android.util.Singleton");
@@ -141,21 +170,6 @@ public class AMSHookHelper {
         Field mHField = activityThreadClass.getDeclaredField("mH");
         mHField.setAccessible(true);
         Handler mH = (Handler) mHField.get(currentActivityThread);
-
-        // 设置它的回调, 根据源码:
-        // 我们自己给他设置一个回调,就会替代之前的回调;
-        //        public void dispatchMessage(Message msg) {
-        //            if (msg.callback != null) {
-        //                handleCallback(msg);
-        //            } else {
-        //                if (mCallback != null) {
-        //                    if (mCallback.handleMessage(msg)) {
-        //                        return;
-        //                    }
-        //                }
-        //                handleMessage(msg);
-        //            }
-        //        }
 
         //3.
         Field mCallBackField = Handler.class.getDeclaredField("mCallback");

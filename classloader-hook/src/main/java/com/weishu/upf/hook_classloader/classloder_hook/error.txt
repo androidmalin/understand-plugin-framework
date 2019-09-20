@@ -1,0 +1,19 @@
+W: Opening an oat file without a class loader. Are you using the deprecated DexFile APIs?
+W: The dalvik.system.DexPathList$Element constructor is not accessible by default. This is a temporary workaround for backwards compatibility with class-loader hacks. Please update your application.
+W: Warning: Using deprecated Element constructor. Do not use internal APIs, this constructor will be removed in the future.
+W: java.lang.reflect.InvocationTargetException
+W:     at java.lang.reflect.Constructor.newInstance0(Native Method)
+W:     at java.lang.reflect.Constructor.newInstance(Constructor.java:334)
+W:     at com.weishu.upf.hook_classloader.classloder_hook.BaseDexClassLoaderHookHelper.patchClassLoader(BaseDexClassLoaderHookHelper.java:71)
+W:     at com.weishu.upf.hook_classloader.MainActivity.attachBaseContext(MainActivity.java:76)
+W:     at android.app.Activity.attach(Activity.java:6942)
+W:     at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:2711)
+W:     at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:2856)
+W:     at android.app.ActivityThread.-wrap11(Unknown Source:0)
+W:     at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1589)
+W:     at android.os.Handler.dispatchMessage(Handler.java:106)
+W:     at android.os.Looper.loop(Looper.java:164)
+W:     at android.app.ActivityThread.main(ActivityThread.java:6494)
+W:     at java.lang.reflect.Method.invoke(Native Method)
+W:     at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:438)
+W:     at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:807)

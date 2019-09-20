@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.weishu.upf.hook_classloader.ams_hook.AMSHookHelper;
 import com.weishu.upf.hook_classloader.classloder_hook.BaseDexClassLoaderHookHelper;
 import com.weishu.upf.hook_classloader.classloder_hook.LoadedApkClassLoaderHookHelper;
 
@@ -31,7 +30,7 @@ public class MainActivity extends Activity {
 
     private static final int CUSTOM_CLASS_LOADER = 2;
 
-    private static final int HOOK_METHOD = CUSTOM_CLASS_LOADER;
+    private static final int HOOK_METHOD = PATCH_BASE_CLASS_LOADER;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -48,7 +47,7 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 try {
                     Intent intent = new Intent();
-                    if (HOOK_METHOD == PATCH_BASE_CLASS_LOADER) {
+                    if (HOOK_METHOD == CUSTOM_CLASS_LOADER) {
                         intent.setComponent(new ComponentName("com.weishu.upf.dynamic_proxy_hook.app2",
                                 "com.weishu.upf.dynamic_proxy_hook.app2.MainActivity"));
                     } else {
@@ -69,18 +68,14 @@ public class MainActivity extends Activity {
         super.attachBaseContext(newBase);
         try {
             Utils.extractAssets(newBase, "ams-pms-hook.apk");
-            if (HOOK_METHOD == PATCH_BASE_CLASS_LOADER) {
-                File dexFile = getFileStreamPath("test.apk");
-                File optDexFile = getFileStreamPath("test.dex");
+            Utils.extractAssets(newBase, "dynamic-proxy-hook.apk");
+            if (HOOK_METHOD == CUSTOM_CLASS_LOADER) {
+                File dexFile = getFileStreamPath("dynamic-proxy-hook.apk");
+                File optDexFile = getFileStreamPath("dynamic-proxy-hook.dex");
                 BaseDexClassLoaderHookHelper.patchClassLoader(getClassLoader(), dexFile, optDexFile);
             } else {
                 LoadedApkClassLoaderHookHelper.hookLoadedApkInActivityThread(getFileStreamPath("ams-pms-hook.apk"));
             }
-
-            AMSHookHelper.hookActivityManagerNative();
-            AMSHookHelper.hookActivityThreadHandler();
-//            File file = getFileStreamPath("ams-pms-hook.apk");
-//            loadResources(file.getAbsolutePath());
         } catch (Throwable e) {
             e.printStackTrace();
         }

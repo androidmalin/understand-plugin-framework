@@ -3,6 +3,11 @@ package com.weishu.upf.hook_classloader;
 import android.app.Application;
 import android.content.Context;
 
+import com.weishu.upf.hook_classloader.ams_hook.AMSHookHelper;
+
+import me.weishu.reflection.Reflection;
+
+
 /**
  * 这个类只是为了方便获取全局Context的.
  *
@@ -16,6 +21,20 @@ public class UPFApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        Reflection.unseal(base);
+        try {
+            AMSHookHelper.hookActivityManagerNative();
+            AMSHookHelper.hookActivityThreadHandler();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         sContext = base;
     }
 

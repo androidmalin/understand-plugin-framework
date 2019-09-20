@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.weishu.upf.hook_classloader"
-        minSdkVersion 23
+        minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -26,4 +26,5 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'me.weishu:free_reflection:2.1.0'
 }
