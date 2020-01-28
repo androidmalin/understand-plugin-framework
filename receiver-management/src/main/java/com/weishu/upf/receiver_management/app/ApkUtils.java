@@ -317,7 +317,7 @@ public final class ApkUtils {
         final Method parsePackageMethod;
 
         if (sdkVersion >= Build.VERSION_CODES.LOLLIPOP) {
-            // >= 5.0.0
+            // >= 5.0.0 (21<=api<)
             // parsePackage(File packageFile, int flags)
             /**
              * 反射创建 PackageParser 对象，无参数构造
@@ -335,7 +335,7 @@ public final class ApkUtils {
                     PackageManager.GET_SERVICES
             );
         } else {
-            // >= 4.0.0
+            // >= 4.0.0 (14<=api<=20)
             // parsePackage(File sourceFile, String destCodePath, DisplayMetrics metrics, int flags)
             /**
              * 反射创建 PackageParser 对象，PackageParser(String archiveSourcePath)

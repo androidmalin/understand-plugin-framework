@@ -74,7 +74,10 @@ public class MainActivity extends Activity {
                 File optDexFile = getFileStreamPath("dynamic-proxy-hook.dex");
                 BaseDexClassLoaderHookHelper.patchClassLoader(getClassLoader(), dexFile, optDexFile);
             } else {
+
                 LoadedApkClassLoaderHookHelper.hookLoadedApkInActivityThread(getFileStreamPath("ams-pms-hook.apk"));
+//                File file = getFileStreamPath("ams-pms-hook.apk");
+//                loadResources(file.getAbsolutePath());
             }
         } catch (Throwable e) {
             e.printStackTrace();

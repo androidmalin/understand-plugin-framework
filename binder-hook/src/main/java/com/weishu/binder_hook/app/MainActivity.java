@@ -8,7 +8,7 @@ import android.widget.EditText;
 
 /**
  * @author weishu
- * @date 16/2/15
+ * 16/2/15
  */
 public class MainActivity extends Activity {
 
@@ -18,11 +18,11 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         try {
             BinderHookHelper.hookClipboardService();
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
-
         EditText editText = new EditText(this);
         setContentView(editText);
+
     }
 }

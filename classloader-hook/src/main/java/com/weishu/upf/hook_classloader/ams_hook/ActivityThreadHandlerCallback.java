@@ -61,8 +61,10 @@ class ActivityThreadHandlerCallback implements Handler.Callback {
             intent.setAccessible(true);
             Intent safeIntent = (Intent) intent.get(activityClientRecordObj);
 
+            if (safeIntent==null)return;
             //获取原始Intent
             Intent target = safeIntent.getParcelableExtra(AMSHookHelper.EXTRA_TARGET_INTENT);
+           if (target==null)return;
             safeIntent.setComponent(target.getComponent());
 
             Field activityInfoField = activityClientRecordObj.getClass().getDeclaredField("activityInfo");

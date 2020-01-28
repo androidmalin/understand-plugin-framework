@@ -8,7 +8,7 @@ import dalvik.system.DexClassLoader;
 
 /**
  * @author weishu
- * @date 16/4/7
+ * 16/4/7
  */
 public class CustomClassLoader extends DexClassLoader {
     private static final String TAG = "CustomClassLoader";

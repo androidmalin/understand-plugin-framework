@@ -1,5 +1,6 @@
 package com.weishu.upf.receiver_management.app;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 
@@ -7,10 +8,11 @@ import android.content.Context;
  * 这个类只是为了方便获取全局Context的.
  *
  * @author weishu
- * @date 16/3/29
+ * 16/3/29
  */
 public class UPFApplication extends Application {
 
+    @SuppressLint("StaticFieldLeak")
     private static Context sContext;
 
     @Override

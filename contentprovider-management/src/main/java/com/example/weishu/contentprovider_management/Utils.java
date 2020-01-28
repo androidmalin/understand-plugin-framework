@@ -11,15 +11,12 @@ import java.io.InputStream;
 
 /**
  * @author weishu
- * @date 16/3/29
+ * 16/3/29
  */
 public class Utils {
 
     /**
      * 把Assets里面得文件复制到 /data/data/files 目录下
-     *
-     * @param context
-     * @param sourceName
      */
     public static void extractAssets(Context context, String sourceName) {
         AssetManager am = context.getAssets();
@@ -45,7 +42,6 @@ public class Utils {
     }
 
 
-    // --------------------------------------------------------------------------
     private static void closeSilently(Closeable closeable) {
         if (closeable == null) {
             return;
@@ -56,7 +52,5 @@ public class Utils {
             // ignore
         }
     }
-
-    private static File sBaseDir;
 
 }

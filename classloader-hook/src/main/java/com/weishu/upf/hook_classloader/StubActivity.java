@@ -1,6 +1,7 @@
 package com.weishu.upf.hook_classloader;
 
 import android.app.Activity;
+import android.os.Bundle;
 
 /**
  * @author weishu
@@ -8,4 +9,11 @@ import android.app.Activity;
  */
 public class StubActivity extends Activity {
     // dummy
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        System.out.println("StubActivity");
+    }
 }

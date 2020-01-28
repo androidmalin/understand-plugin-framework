@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "28.0.3"
+    buildToolsVersion "29.0.2"
 
     defaultConfig {
         applicationId "com.weishu.upf.hook_classloader"
@@ -26,5 +26,5 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'me.weishu:free_reflection:2.1.0'
+    implementation 'me.weishu:free_reflection:2.2.0'
 }

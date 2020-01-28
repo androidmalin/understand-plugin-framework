@@ -20,6 +20,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        System.out.println("onCreate onStart");
+
         // TODO: 16/1/28 支持Activity直接跳转请在这里Hook
         // 家庭作业,留给读者完成.
 
@@ -53,5 +55,11 @@ public class MainActivity extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        System.out.println("dynamic onStart");
     }
 }

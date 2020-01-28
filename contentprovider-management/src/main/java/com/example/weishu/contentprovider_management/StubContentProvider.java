@@ -4,13 +4,14 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 /**
  * content://
  *
  * @author weishu
- * @date 16/7/11.
+ * 16/7/11.
  */
 public class StubContentProvider extends ContentProvider {
 
@@ -20,38 +21,44 @@ public class StubContentProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
+        Log.e(TAG, "StubContentProvider#onCreate()");
         return true;
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+        Log.e(TAG, "StubContentProvider#query()");
         //noinspection ConstantConditions
         return getContext().getContentResolver().query(getRealUri(uri), projection, selection, selectionArgs, sortOrder);
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
+        Log.e(TAG, "StubContentProvider#getType()");
         return null;
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
+        Log.e(TAG, "StubContentProvider#insert()");
         //noinspection ConstantConditions
         return getContext().getContentResolver().insert(getRealUri(uri), values);
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+        Log.e(TAG, "StubContentProvider#delete()");
         return 0;
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+        Log.e(TAG, "StubContentProvider#update()");
         return 0;
     }
 
     /**
-     * 为了使得插件的ContentProvder提供给外部使用，我们需要一个StubProvider做中转；
+     * 为了使得插件的ContentProvider提供给外部使用，我们需要一个StubProvider做中转；
      * 如果外部程序需要使用插件系统中插件的ContentProvider，不能直接查询原来的那个uri
      * 我们对uri做一些手脚，使得插件系统能识别这个uri；
      * <p>
@@ -74,6 +81,7 @@ public class StubContentProvider extends ContentProvider {
      * @return 插件真正的URI
      */
     private Uri getRealUri(Uri raw) {
+        Log.e(TAG, "StubContentProvider#getRealUri()");
         String rawAuth = raw.getAuthority();
         if (!AUTHORITY.equals(rawAuth)) {
             Log.w(TAG, "rawAuth:" + rawAuth);

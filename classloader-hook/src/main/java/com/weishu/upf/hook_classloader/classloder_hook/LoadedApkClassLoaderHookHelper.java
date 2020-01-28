@@ -3,7 +3,7 @@ package com.weishu.upf.hook_classloader.classloder_hook;
 import android.annotation.SuppressLint;
 import android.content.pm.ApplicationInfo;
 
-import com.weishu.upf.hook_classloader.Utils;
+import com.weishu.upf.hook_classloader.PluginUtils;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -93,8 +93,8 @@ public class LoadedApkClassLoaderHookHelper {
         Object loadedApk = getPackageInfoNoCheckMethod.invoke(currentActivityThread, applicationInfo, defaultCompatibilityInfo);
 
         //12.获取odex,libDir路径
-        String odexPath = Utils.getPluginOptDexDir(applicationInfo.packageName).getPath();
-        String libDir = Utils.getPluginLibDir(applicationInfo.packageName).getPath();
+        String odexPath = PluginUtils.getPluginOptDexDir(applicationInfo.packageName).getPath();
+        String libDir = PluginUtils.getPluginLibDir(applicationInfo.packageName).getPath();
 
         //13.接下来我们需要替换其中的ClassLoader
         ClassLoader classLoader = new CustomClassLoader(apkFile.getPath(), odexPath, libDir, ClassLoader.getSystemClassLoader());

@@ -3,9 +3,11 @@ package com.weishu.upf.receiver_management.app;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,15 +16,17 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.Map;
 
 /**
  * @author weishu
- * @date 16/4/7
+ * 16/4/7
  */
 @SuppressLint("SetTextI18n")
 public class MainActivity extends Activity {
 
-    private static final String JAR_NAME = "test.jar";
+    private static final String TAG = "XXYY";
+    private static final String JAR_NAME = "receiverPlugin-debug.apk";
     // 发送广播到插件之后, 插件如果受到, 那么会回传一个ACTION 为这个值的广播;
     private static final String ACTION = "com.weishu.upf.demo.app2.PLUGIN_ACTION";
 
@@ -31,7 +35,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
-        //initData();
+        initData();
     }
 
     private void initData() {
@@ -39,7 +43,7 @@ public class MainActivity extends Activity {
         File testPlugin = getFileStreamPath(JAR_NAME);
         try {
             ReceiverHelper.preLoadReceiver(this, testPlugin);
-            Log.i(getClass().getSimpleName(), "hook success");
+            Log.i(TAG, "hook success");
         } catch (Exception e) {
             throw new RuntimeException("receiver load failed", e);
         }
@@ -53,9 +57,12 @@ public class MainActivity extends Activity {
         try {
             ApplicationInfo applicationInfo = ApkUtils.getApplicationInfo(testPlugin, this);
             String name = applicationInfo.packageName;
+            System.out.println("packageName:" + name);
 
-            System.out.println(name);
-            ApkUtils.getActivityInfos(testPlugin, this);
+            Map<ComponentName, ActivityInfo> map = ApkUtils.getActivityInfos(testPlugin, this);
+            for (Map.Entry<ComponentName, ActivityInfo> entry : map.entrySet()) {
+                System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,10 +75,10 @@ public class MainActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initData();
+                //initData();
                 //test();
-                //Toast.makeText(getApplicationContext(), "插件插件!收到请回答!!", Toast.LENGTH_SHORT).show();
-                //sendBroadcast(new Intent("com.weishu.upf.demo.app2.Receiver1"));
+                sendBroadcast(new Intent("com.weishu.upf.demo.app2.Receiver1"));
+                sendBroadcast(new Intent("com.weishu.upf.demo.app2.Receiver2"));
             }
         });
     }
@@ -79,6 +86,7 @@ public class MainActivity extends Activity {
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive 插件插件,我是主程序,握手完成!");
             Toast.makeText(context, "插件插件,我是主程序,握手完成!", Toast.LENGTH_SHORT).show();
         }
     };
