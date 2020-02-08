@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * @author weishu
- * @date 16/5/10
+ * 16/5/10
  */
 @SuppressLint("PrivateApi")
 
@@ -33,10 +33,10 @@ public final class ServiceManager {
 
     private static volatile ServiceManager sInstance;
 
-    private Map<String, Service> mServiceMap = new HashMap<String, Service>();
+    private volatile Map<String, Service> mServiceMap = new HashMap<>();
 
     // 存储插件的Service信息
-    private Map<ComponentName, ServiceInfo> mServiceInfoMap = new HashMap<ComponentName, ServiceInfo>();
+    private volatile Map<ComponentName, ServiceInfo> mServiceInfoMap = new HashMap<>();
 
     public synchronized static ServiceManager getInstance() {
         if (sInstance == null) {
@@ -48,10 +48,10 @@ public final class ServiceManager {
     /**
      * 启动某个插件Service; 如果Service还没有启动, 那么会创建新的插件Service
      *
-     * @param proxyIntent
-     * @param startId
+     * @param proxyIntent proxyIntent
+     * @param startId     startId
      */
-    public void onStart(Intent proxyIntent, int startId) {
+    void onStart(Intent proxyIntent, int startId) {
 
         Intent targetIntent = proxyIntent.getParcelableExtra(AMSHookHelper.EXTRA_TARGET_INTENT);
         ServiceInfo serviceInfo = selectPluginService(targetIntent);
@@ -77,8 +77,8 @@ public final class ServiceManager {
     /**
      * 停止某个插件Service, 当全部的插件Service都停止之后, ProxyService也会停止
      *
-     * @param targetIntent
-     * @return
+     * @param targetIntent targetIntent
+     * @return int
      */
     public int stopService(Intent targetIntent) {
         ServiceInfo serviceInfo = selectPluginService(targetIntent);
@@ -106,7 +106,7 @@ public final class ServiceManager {
      * 选择匹配的ServiceInfo
      *
      * @param pluginIntent 插件的Intent
-     * @return
+     * @return ServiceInfo
      */
     private ServiceInfo selectPluginService(Intent pluginIntent) {
         for (ComponentName componentName : mServiceInfoMap.keySet()) {
@@ -121,7 +121,7 @@ public final class ServiceManager {
      * 通过ActivityThread的handleCreateService方法创建出Service对象
      *
      * @param serviceInfo 插件的ServiceInfo
-     * @throws Exception
+     * @throws Exception e
      */
     private void proxyCreateService(ServiceInfo serviceInfo) throws Exception {
         IBinder token = new Binder();
@@ -183,7 +183,8 @@ public final class ServiceManager {
      * @param apkFile 插件对应的apk文件
      * @throws Exception 解析出错或者反射调用出错, 均会抛出异常
      */
-    public void preLoadServices(File apkFile) throws Exception {
+    @SuppressWarnings("JavaReflectionMemberAccess")
+    void preLoadServices(File apkFile) throws Exception {
         Class<?> packageParserClass = Class.forName("android.content.pm.PackageParser");
         Method parsePackageMethod = packageParserClass.getDeclaredMethod("parsePackage", File.class, int.class);
 

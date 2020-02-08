@@ -3,13 +3,13 @@
     package="com.weishu.upf.service_management.app">
 
     <application
-        android:name="com.weishu.upf.service_management.app.UPFApplication"
+        android:name=".UPFApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name="com.weishu.upf.service_management.app.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -17,8 +17,8 @@
         </activity>
 
         <service
-            android:name="com.weishu.upf.service_management.app.ProxyService"
-            android:process="plugin01" />
+            android:name=".ProxyService"
+            android:process=".plugin01" />
 
     </application>
 

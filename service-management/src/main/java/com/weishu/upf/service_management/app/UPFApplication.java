@@ -1,5 +1,6 @@
 package com.weishu.upf.service_management.app;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 
@@ -16,6 +17,7 @@ import java.io.File;
  */
 public class UPFApplication extends Application {
 
+    @SuppressLint("StaticFieldLeak")
     private static Context sContext;
 
     @Override
@@ -26,16 +28,16 @@ public class UPFApplication extends Application {
         try {
             // 拦截startService, stopService等操作
             AMSHookHelper.hookActivityManagerNative();
-            Utils.extractAssets(base, "test.jar");
-            File apkFile = getFileStreamPath("test.jar");
-            File odexFile = getFileStreamPath("test.odex");
+            Utils.extractAssets(base, "servicePlugin-debug.apk");
+            File apkFile = getFileStreamPath("servicePlugin-debug.apk");
+            File odexFile = getFileStreamPath("servicePlugin-debug.odex");
 
             // Hook ClassLoader, 让插件中的类能够被成功加载
             BaseDexClassLoaderHookHelper.patchClassLoader(getClassLoader(), apkFile, odexFile);
             // 解析插件中的Service组件
             ServiceManager.getInstance().preLoadServices(apkFile);
-        } catch (Exception e) {
-            throw new RuntimeException("hook failed");
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
     }
 

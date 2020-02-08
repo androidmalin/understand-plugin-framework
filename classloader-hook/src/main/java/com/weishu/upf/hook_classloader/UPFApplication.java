@@ -25,19 +25,21 @@ public class UPFApplication extends Application {
         if (Build.VERSION.SDK_INT >= 28) {
             Reflection.unseal(base);
         }
-        try {
-            AMSHookHelper.hookActivityManagerNative();
-            AMSHookHelper.hookActivityThreadHandler();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+//        try {
+//            AMSHookHelper.hookActivityManagerNative();
+//            AMSHookHelper.hookActivityThreadHandler();
+//        } catch (ClassNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IllegalAccessException e) {
+//            e.printStackTrace();
+//        } catch (NoSuchFieldException e) {
+//            e.printStackTrace();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
+        HookActivity.hookStartActivity(base, StubActivity.class);
+        HookActivity.hookLauncherActivity(base, StubActivity.class, true);
         sContext = base;
     }
 

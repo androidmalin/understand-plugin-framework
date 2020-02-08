@@ -61,22 +61,24 @@ class ActivityThreadHandlerCallback implements Handler.Callback {
             intent.setAccessible(true);
             Intent safeIntent = (Intent) intent.get(activityClientRecordObj);
 
-            if (safeIntent==null)return;
+            if (safeIntent == null) return;
             //获取原始Intent
             Intent target = safeIntent.getParcelableExtra(AMSHookHelper.EXTRA_TARGET_INTENT);
-           if (target==null)return;
+            if (target == null || target.getComponent() == null) return;
             safeIntent.setComponent(target.getComponent());
 
             Field activityInfoField = activityClientRecordObj.getClass().getDeclaredField("activityInfo");
             activityInfoField.setAccessible(true);
 
+            //TODO:注意这里.....
             // 根据 getPackageInfo 根据这个 包名获取 LoadedApk的信息; 因此这里我们需要手动填上, 从而能够命中缓存
             ActivityInfo activityInfo = (ActivityInfo) activityInfoField.get(activityClientRecordObj);
-            activityInfo.applicationInfo.packageName = target.getPackage() == null ? target.getComponent().getPackageName() : target.getPackage();
+            activityInfo.applicationInfo.packageName = target.getPackage() == null ?
+                    target.getComponent().getPackageName() : target.getPackage();
 
             hookPackageManager();
         } catch (Throwable e) {
-            Log.d(TAG,e.getMessage(),e);
+            Log.d(TAG, e.getMessage(), e);
         }
     }
 

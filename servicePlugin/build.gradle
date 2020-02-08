@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "com.weishu.upf.service_management.app"
+        applicationId "com.weishu.upf.demo.app2"
         minSdkVersion 15
-        targetSdkVersion 23
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
     }
@@ -16,7 +16,6 @@ android {
         sourceCompatibility '1.7'
         targetCompatibility '1.7'
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -26,5 +25,6 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly 'com.android.support:support-annotations:28.0.0'
 }

@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -324,10 +326,20 @@ class HookActivity {
             //4.获取原始的Intent
             Intent originIntent = safeIntent.getParcelableExtra(EXTRA_ORIGIN_INTENT);
 
-            if (originIntent == null) return;
+            if (originIntent == null || originIntent.getComponent() == null) return;
 
             //5.将安全的Intent,替换为原始的Intent,以启动我们要启动的未注册的Activity
             safeIntent.setComponent(originIntent.getComponent());
+
+
+            Field activityInfoField = activityClientRecordObj.getClass().getDeclaredField("activityInfo");
+            activityInfoField.setAccessible(true);
+
+            //TODO:注意这里.....
+            // 根据 getPackageInfo 根据这个 包名获取 LoadedApk的信息; 因此这里我们需要手动填上, 从而能够命中缓存
+            ActivityInfo activityInfo = (ActivityInfo) activityInfoField.get(activityClientRecordObj);
+            activityInfo.applicationInfo.packageName = originIntent.getPackage() == null ?
+                    originIntent.getComponent().getPackageName() : originIntent.getPackage();
 
             //6.处理启动的Activity为AppCompatActivity类或者子类的情况
             if (!isAppCompat) return;
@@ -441,8 +453,7 @@ class HookActivity {
      * 获取包名
      */
     private static String getAppPackageName(Context context) {
-        Context applicationContext = context.getApplicationContext();
-        return applicationContext.getPackageName();
+        return context.getPackageName();
     }
 
      /*1.处理使用com.android.support:appcompat-v7:27.1.1会出现这个问题.使用28.0.0则不会
@@ -601,6 +612,8 @@ class HookActivity {
                 }
                 ComponentName componentName = new ComponentName(mAppPackageName, mSubActivityClassName);
                 args[index] = componentName;
+            } else if (method.getName().equals("getPackageInfo")) {
+                return new PackageInfo();
             }
             return method.invoke(mIPackageManagerObj, args);
         }

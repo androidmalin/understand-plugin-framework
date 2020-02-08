@@ -5,8 +5,6 @@ import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +14,6 @@ import com.weishu.upf.hook_classloader.classloder_hook.BaseDexClassLoaderHookHel
 import com.weishu.upf.hook_classloader.classloder_hook.LoadedApkClassLoaderHookHelper;
 
 import java.io.File;
-import java.lang.reflect.Method;
 
 /**
  * @author weishu
@@ -67,58 +64,17 @@ public class MainActivity extends Activity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
         try {
-            Utils.extractAssets(newBase, "ams-pms-hook.apk");
+            Utils.extractAssets(newBase, "ams-pms-hook-debug.apk");
             Utils.extractAssets(newBase, "dynamic-proxy-hook.apk");
             if (HOOK_METHOD == CUSTOM_CLASS_LOADER) {
                 File dexFile = getFileStreamPath("dynamic-proxy-hook.apk");
                 File optDexFile = getFileStreamPath("dynamic-proxy-hook.dex");
                 BaseDexClassLoaderHookHelper.patchClassLoader(getClassLoader(), dexFile, optDexFile);
             } else {
-
-                LoadedApkClassLoaderHookHelper.hookLoadedApkInActivityThread(getFileStreamPath("ams-pms-hook.apk"));
-//                File file = getFileStreamPath("ams-pms-hook.apk");
-//                loadResources(file.getAbsolutePath());
+                LoadedApkClassLoaderHookHelper.hookLoadedApkInActivityThread(getFileStreamPath("ams-pms-hook-debug.apk"));
             }
         } catch (Throwable e) {
             e.printStackTrace();
         }
-    }
-
-
-    private AssetManager mAssetManager = null;//资源管理器
-    private Resources mResources;//资源
-    private Resources.Theme mTheme;//主题
-
-    protected void loadResources(String dexPath) {
-        try {
-            AssetManager assetManager = AssetManager.class.newInstance();
-            Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
-            addAssetPath.invoke(assetManager, dexPath);
-            mAssetManager = assetManager;
-        } catch (Exception e) {
-            Log.i("inject", "loadResource error:" + Log.getStackTraceString(e));
-            e.printStackTrace();
-        }
-        Resources superRes = super.getResources();
-        superRes.getDisplayMetrics();
-        superRes.getConfiguration();
-        mResources = new Resources(mAssetManager, superRes.getDisplayMetrics(), superRes.getConfiguration());
-        mTheme = mResources.newTheme();
-        mTheme.setTo(super.getTheme());
-    }
-
-    @Override
-    public AssetManager getAssets() {
-        return mAssetManager == null ? super.getAssets() : mAssetManager;
-    }
-
-    @Override
-    public Resources getResources() {
-        return mResources == null ? super.getResources() : mResources;
-    }
-
-    @Override
-    public Resources.Theme getTheme() {
-        return mTheme == null ? super.getTheme() : mTheme;
     }
 }

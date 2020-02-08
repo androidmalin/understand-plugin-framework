@@ -1,4 +1,4 @@
-package com.weishu.upf.service_management.app;
+package com.weishu.upf.demo.app2;
 
 import android.content.Context;
 import android.content.res.AssetManager;
@@ -18,7 +18,7 @@ public class Utils {
     /**
      * 把Assets里面得文件复制到 /data/data/files 目录下
      */
-    static void extractAssets(Context context, String sourceName) {
+    public static void extractAssets(Context context, String sourceName) {
         AssetManager am = context.getAssets();
         InputStream is = null;
         FileOutputStream fos = null;
@@ -52,5 +52,7 @@ public class Utils {
             // ignore
         }
     }
+
+    private static File sBaseDir;
 
 }
