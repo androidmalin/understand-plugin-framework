@@ -23,6 +23,7 @@ public class UPFApplication extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        Reflection.unseal();
         sContext = base;
 
         try {

@@ -26,7 +26,6 @@ import java.util.Map;
  * 16/5/10
  */
 @SuppressLint("PrivateApi")
-
 public final class ServiceManager {
 
     private static final String TAG = "ServiceManager";
@@ -61,6 +60,10 @@ public final class ServiceManager {
             return;
         }
         try {
+            String processName0 = ProcessUtil.getCurProcessName(UPFApplication.getContext());
+            Log.d(TAG, "0processName:" + processName0);
+            Log.d(TAG, "0mServiceMap.size:" + mServiceMap.size());
+            Log.d(TAG, "0mServiceMap.containsKey(serviceInfo.name):" + serviceInfo.name);
 
             if (!mServiceMap.containsKey(serviceInfo.name)) {
                 // service还不存在, 先创建
@@ -69,7 +72,13 @@ public final class ServiceManager {
 
             Service service = mServiceMap.get(serviceInfo.name);
             service.onStart(targetIntent, startId);
-        } catch (Exception e) {
+
+            String processName2 = ProcessUtil.getCurProcessName(UPFApplication.getContext());
+            Log.d(TAG, "2processName:" + processName2);
+            Log.d(TAG, "2mServiceMap.size:" + mServiceMap.size());
+            Log.d(TAG, "2mServiceMap.get(serviceInfo.name):" + serviceInfo.name);
+        } catch (Throwable e) {
+            Log.e(TAG, "eee:" + e.getStackTrace());
             e.printStackTrace();
         }
     }
@@ -86,6 +95,11 @@ public final class ServiceManager {
             Log.w(TAG, "can not found service: " + targetIntent.getComponent());
             return 0;
         }
+        String processName3 = ProcessUtil.getCurProcessName(UPFApplication.getContext());
+        Log.d(TAG, "3processName:" + processName3);
+        Log.d(TAG, "3mServiceMap.size:" + mServiceMap.size());
+        Log.d(TAG, "3mServiceMap.get(serviceInfo.name):" + serviceInfo.name);
+
         Service service = mServiceMap.get(serviceInfo.name);
         if (service == null) {
             Log.w(TAG, "can not runnning, are you stopped it multi-times?");
@@ -121,9 +135,9 @@ public final class ServiceManager {
      * 通过ActivityThread的handleCreateService方法创建出Service对象
      *
      * @param serviceInfo 插件的ServiceInfo
-     * @throws Exception e
+     * @throws Throwable e
      */
-    private void proxyCreateService(ServiceInfo serviceInfo) throws Exception {
+    private void proxyCreateService(ServiceInfo serviceInfo) throws Throwable {
         IBinder token = new Binder();
 
         // 创建CreateServiceData对象, 用来传递给ActivityThread的handleCreateService 当作参数
@@ -174,6 +188,10 @@ public final class ServiceManager {
 
         // 将此Service存储起来
         mServiceMap.put(serviceInfo.name, service);
+        String processName1 = ProcessUtil.getCurProcessName(UPFApplication.getContext());
+        Log.d(TAG, "1processName:" + processName1);
+        Log.d(TAG, "1mServiceMap.size:" + mServiceMap.size());
+        Log.d(TAG, "1mServiceMap.put(serviceInfo.name, service):" + serviceInfo.name);
     }
 
     /**
@@ -181,10 +199,10 @@ public final class ServiceManager {
      * 主要是调用PackageParser类的generateServiceInfo方法
      *
      * @param apkFile 插件对应的apk文件
-     * @throws Exception 解析出错或者反射调用出错, 均会抛出异常
+     * @throws Throwable 解析出错或者反射调用出错, 均会抛出异常
      */
     @SuppressWarnings("JavaReflectionMemberAccess")
-    void preLoadServices(File apkFile) throws Exception {
+    void preLoadServices(File apkFile) throws Throwable {
         Class<?> packageParserClass = Class.forName("android.content.pm.PackageParser");
         Method parsePackageMethod = packageParserClass.getDeclaredMethod("parsePackage", File.class, int.class);
 

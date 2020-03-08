@@ -16,10 +16,8 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".ProxyService"
-            android:process=".plugin01" />
-
+        <service android:name=".ProxyService" />
+        <!--android:process=".plugin01"-->
     </application>
 
 </manifest>

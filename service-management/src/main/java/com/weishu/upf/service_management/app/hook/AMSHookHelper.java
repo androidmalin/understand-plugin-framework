@@ -3,6 +3,7 @@ package com.weishu.upf.service_management.app.hook;
 import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -30,9 +31,16 @@ public class AMSHookHelper {
      * 主要完成的操作是  "把真正要启动的Activity临时替换为在AndroidManifest.xml中声明的替身Activity"
      * 进而骗过AMS
      */
+    @SuppressWarnings("JavaReflectionMemberAccess")
     public static void hookActivityManagerNative() throws ClassNotFoundException, IllegalAccessException, NoSuchFieldException {
-        Class<?> activityManagerNativeClass = Class.forName("android.app.ActivityManagerNative");
-        Field gDefaultField = activityManagerNativeClass.getDeclaredField("gDefault");
+        Field gDefaultField;
+        if (Build.VERSION.SDK_INT >= 26) {
+            Class<?> activityManager = Class.forName("android.app.ActivityManager");
+            gDefaultField = activityManager.getDeclaredField("IActivityManagerSingleton");
+        } else {
+            Class<?> activityManagerNativeClass = Class.forName("android.app.ActivityManagerNative");
+            gDefaultField = activityManagerNativeClass.getDeclaredField("gDefault");
+        }
         gDefaultField.setAccessible(true);
 
         Object gDefault = gDefaultField.get(null);
@@ -50,8 +58,7 @@ public class AMSHookHelper {
         Object proxy = Proxy.newProxyInstance(
                 Thread.currentThread().getContextClassLoader(),
                 new Class<?>[]{iActivityManagerInterface},
-                new IActivityManagerHandler(rawIActivityManager)
-        );
+                new IActivityManagerHandler(rawIActivityManager));
         mInstanceField.set(gDefault, proxy);
     }
 

@@ -59,6 +59,7 @@ public class MainActivity extends Activity {
             }
         });
     }
+    //adb shell am start -n "com.weishu.upf.hook_classloader/com.weishu.upf.hook_classloader.MainActivity" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER -D
 
     @Override
     protected void attachBaseContext(Context newBase) {
