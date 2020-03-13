@@ -39,7 +39,11 @@ public final class ServiceManager {
 
     public synchronized static ServiceManager getInstance() {
         if (sInstance == null) {
-            sInstance = new ServiceManager();
+            synchronized (ServiceManager.class) {
+                if (sInstance == null) {
+                    sInstance = new ServiceManager();
+                }
+            }
         }
         return sInstance;
     }
@@ -78,7 +82,7 @@ public final class ServiceManager {
             Log.d(TAG, "2mServiceMap.size:" + mServiceMap.size());
             Log.d(TAG, "2mServiceMap.get(serviceInfo.name):" + serviceInfo.name);
         } catch (Throwable e) {
-            Log.e(TAG, "eee:" + e.getStackTrace());
+            Log.e(TAG, "Throwable:" + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -231,31 +235,38 @@ public final class ServiceManager {
      */
     @SuppressWarnings("JavaReflectionMemberAccess")
     void preLoadServices(File apkFile) throws Throwable {
-        Class<?> packageParserClass = Class.forName("android.content.pm.PackageParser");
-        Method parsePackageMethod = packageParserClass.getDeclaredMethod("parsePackage", File.class, int.class);
+        //1.生成PackageParser对象
+        Class<?> packageParserClazz = Class.forName("android.content.pm.PackageParser");
+        Object packageParser = packageParserClazz.newInstance();
 
-        Object packageParser = packageParserClass.newInstance();
-
-        // 首先调用parsePackage获取到apk对象对应的Package对象
+        //2.调用parsePackage获取到apk对象对应的Package对象
+        //public Package parsePackage(File packageFile, int flags) {}
+        Method parsePackageMethod = packageParserClazz.getDeclaredMethod("parsePackage", File.class, int.class);
         Object packageObj = parsePackageMethod.invoke(packageParser, apkFile, PackageManager.GET_SERVICES);
 
-        // 读取Package对象里面的services字段
-        // 接下来要做的就是根据这个List<Service> 获取到Service对应的ServiceInfo
+        //3.读取Package对象里面的services字段
         Field servicesField = packageObj.getClass().getDeclaredField("services");
-        List services = (List) servicesField.get(packageObj);
+        //public final ArrayList<Service> services = new ArrayList<Service>(0);
+        List<?> services = (List<?>) servicesField.get(packageObj);
 
+        //4.接下来要做的就是根据这个List<Service> 获取到Service对应的ServiceInfo
         // 调用generateServiceInfo 方法, 把PackageParser.Service转换成ServiceInfo
-        Class<?> packageParser$ServiceClass = Class.forName("android.content.pm.PackageParser$Service");
-        Class<?> packageUserStateClass = Class.forName("android.content.pm.PackageUserState");
-        Class<?> userHandler = Class.forName("android.os.UserHandle");
-        Method getCallingUserIdMethod = userHandler.getDeclaredMethod("getCallingUserId");
+        Class<?> packageParser$ServiceClazz = Class.forName("android.content.pm.PackageParser$Service");
+
+        //5.get defaultUserState
+        Class<?> packageUserStateClazz = Class.forName("android.content.pm.PackageUserState");
+        Object defaultUserState = packageUserStateClazz.newInstance();
+
+        //6. get userId
+        Class<?> userHandlerClazz = Class.forName("android.os.UserHandle");
+        Method getCallingUserIdMethod = userHandlerClazz.getDeclaredMethod("getCallingUserId");
         int userId = (Integer) getCallingUserIdMethod.invoke(null);
-        Object defaultUserState = packageUserStateClass.newInstance();
 
-        // 需要调用 android.content.pm.PackageParser#generateActivityInfo(android.content.pm.ActivityInfo, int, android.content.pm.PackageUserState, int)
-        Method generateReceiverInfo = packageParserClass.getDeclaredMethod("generateServiceInfo", packageParser$ServiceClass, int.class, packageUserStateClass, int.class);
+        //7. call generateServiceInfo方法
+        // public static final ServiceInfo generateServiceInfo(android.content.pm.PackageParser.Service s, int flags, android.content.pm.PackageUserState state, int userId) {
+        Method generateReceiverInfo = packageParserClazz.getDeclaredMethod("generateServiceInfo", packageParser$ServiceClazz, int.class, packageUserStateClazz, int.class);
 
-        // 解析出intent对应的Service组件
+        //8. 解析出intent对应的Service组件
         for (Object service : services) {
             ServiceInfo info = (ServiceInfo) generateReceiverInfo.invoke(packageParser, service, 0, defaultUserState, userId);
             mServiceInfoMap.put(new ComponentName(info.packageName, info.name), info);
