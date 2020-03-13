@@ -138,56 +138,84 @@ public final class ServiceManager {
      * @throws Throwable e
      */
     private void proxyCreateService(ServiceInfo serviceInfo) throws Throwable {
+        //0.
         IBinder token = new Binder();
 
-        // 创建CreateServiceData对象, 用来传递给ActivityThread的handleCreateService 当作参数
-        Class<?> createServiceDataClass = Class.forName("android.app.ActivityThread$CreateServiceData");
-        Constructor<?> constructor = createServiceDataClass.getDeclaredConstructor();
-        constructor.setAccessible(true);
-        Object createServiceData = constructor.newInstance();
+        //1.创建CreateServiceData对象, 用来传递给ActivityThread的handleCreateService 当作参数
+        //ActivityThread的内部类CreateServiceData static final class CreateServiceData {}
+        Class<?> createServiceDataClazz = Class.forName("android.app.ActivityThread$CreateServiceData");
+        Constructor<?> createServiceDataConstructor = createServiceDataClazz.getDeclaredConstructor();
+        createServiceDataConstructor.setAccessible(true);
+        Object createServiceData = createServiceDataConstructor.newInstance();
 
-        // 写入我们创建的createServiceData的token字段, ActivityThread的handleCreateService用这个作为key存储Service
-        Field tokenField = createServiceDataClass.getDeclaredField("token");
+        //2.给我们创建的createServiceData对象的token字段赋值, ActivityThread的handleCreateService用这个作为key存储Service
+        Field tokenField = createServiceDataClazz.getDeclaredField("token");
         tokenField.setAccessible(true);
         tokenField.set(createServiceData, token);
 
-        // 写入info对象
-        // 这个修改是为了loadClass的时候, LoadedApk会是主程序的ClassLoader, 我们选择Hook BaseDexClassLoader的方式加载插件
+        //3.写入info对象
+        //这个修改是为了loadClass的时候, LoadedApk会是主程序的ClassLoader, 我们选择Hook BaseDexClassLoader的方式加载插件
         serviceInfo.applicationInfo.packageName = UPFApplication.getContext().getPackageName();
-        Field infoField = createServiceDataClass.getDeclaredField("info");
+
+        //android10出现的异常解决办法,通过异常，寻找出错的地方
+        //TODO:插件APK的路径
+        String path = UPFApplication.getContext().getFileStreamPath("servicePlugin-debug.apk").getPath();
+        serviceInfo.applicationInfo.sourceDir = path;
+        serviceInfo.applicationInfo.publicSourceDir = path;
+        serviceInfo.applicationInfo.nativeLibraryDir = UPFApplication.getContext().getApplicationInfo().nativeLibraryDir;
+        System.out.println("path:" + path);
+        System.out.println("nativeLibraryDir:" + UPFApplication.getContext().getApplicationInfo().nativeLibraryDir);
+
+        //4.给我们创建的createServiceData对象的info字段赋值
+        Field infoField = createServiceDataClazz.getDeclaredField("info");
         infoField.setAccessible(true);
         infoField.set(createServiceData, serviceInfo);
 
-        // 写入compatInfo字段
-        // 获取默认的compatibility配置
-        Class<?> compatibilityClass = Class.forName("android.content.res.CompatibilityInfo");
-        Field defaultCompatibilityField = compatibilityClass.getDeclaredField("DEFAULT_COMPATIBILITY_INFO");
+        //5.给我们创建的createServiceData对象的compatInfo字段赋值
+        //5.1获取默认的compatibility配置
+        //public class CompatibilityInfo implements Parcelable {
+        //    /** default compatibility info object for compatible applications */
+        //    public static final CompatibilityInfo DEFAULT_COMPATIBILITY_INFO = new CompatibilityInfo() {
+        //    };
+        //}
+        Class<?> compatibilityClazz = Class.forName("android.content.res.CompatibilityInfo");
+        Field defaultCompatibilityField = compatibilityClazz.getDeclaredField("DEFAULT_COMPATIBILITY_INFO");
         Object defaultCompatibility = defaultCompatibilityField.get(null);
-        Field compatInfoField = createServiceDataClass.getDeclaredField("compatInfo");
+
+        //5.2赋值
+        Field compatInfoField = createServiceDataClazz.getDeclaredField("compatInfo");
         compatInfoField.setAccessible(true);
         compatInfoField.set(createServiceData, defaultCompatibility);
 
-        Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
-        Method currentActivityThreadMethod = activityThreadClass.getDeclaredMethod("currentActivityThread");
+        //6.调用ActivityThread#handleCreateService(CreateServiceData data){}方法
+        //6.1 get currentActivityThread
+        Class<?> activityThreadClazz = Class.forName("android.app.ActivityThread");
+        Method currentActivityThreadMethod = activityThreadClazz.getDeclaredMethod("currentActivityThread");
+        currentActivityThreadMethod.setAccessible(true);
         Object currentActivityThread = currentActivityThreadMethod.invoke(null);
 
-        // private void handleCreateService(CreateServiceData data) {
-        Method handleCreateServiceMethod = activityThreadClass.getDeclaredMethod("handleCreateService", createServiceDataClass);
+        //6.2 invoke handleCreateService(CreateServiceData data) {}方法
+        // private void handleCreateService(CreateServiceData data) {}
+        Method handleCreateServiceMethod = activityThreadClazz.getDeclaredMethod("handleCreateService", createServiceDataClazz);
         handleCreateServiceMethod.setAccessible(true);
-
         handleCreateServiceMethod.invoke(currentActivityThread, createServiceData);
 
-        // handleCreateService创建出来的Service对象并没有返回, 而是存储在ActivityThread的mServices字段里面, 这里我们手动把它取出来
-        Field mServicesField = activityThreadClass.getDeclaredField("mServices");
+        //7.获取存储在ActivityThread的mServices字段里的值
+        // handleCreateService方法创建出来的Service对象并没有返回, 而是存储在ActivityThread的mServices字段里面, 这里我们手动把它取出来
+        Field mServicesField = activityThreadClazz.getDeclaredField("mServices");
         mServicesField.setAccessible(true);
         Map mServices = (Map) mServicesField.get(currentActivityThread);
+
+        //8.获取我们新创建出来的Service对象
         Service service = (Service) mServices.get(token);
 
-        // 获取到之后, 移除这个service, 我们只是借花献佛
+        //9.获取到之后, 移除这个service, 我们只是借花献佛。
+        //TODO:想想为什么
         mServices.remove(token);
 
-        // 将此Service存储起来
+        //10.将此Service存储起来
         mServiceMap.put(serviceInfo.name, service);
+
         String processName1 = ProcessUtil.getCurProcessName(UPFApplication.getContext());
         Log.d(TAG, "1processName:" + processName1);
         Log.d(TAG, "1mServiceMap.size:" + mServiceMap.size());
@@ -225,8 +253,7 @@ public final class ServiceManager {
         Object defaultUserState = packageUserStateClass.newInstance();
 
         // 需要调用 android.content.pm.PackageParser#generateActivityInfo(android.content.pm.ActivityInfo, int, android.content.pm.PackageUserState, int)
-        Method generateReceiverInfo = packageParserClass.getDeclaredMethod("generateServiceInfo",
-                packageParser$ServiceClass, int.class, packageUserStateClass, int.class);
+        Method generateReceiverInfo = packageParserClass.getDeclaredMethod("generateServiceInfo", packageParser$ServiceClass, int.class, packageUserStateClass, int.class);
 
         // 解析出intent对应的Service组件
         for (Object service : services) {
