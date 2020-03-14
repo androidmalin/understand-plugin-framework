@@ -136,7 +136,27 @@ public final class ServiceManager {
     }
 
     /**
-     * 通过ActivityThread的handleCreateService方法创建出Service对象
+     * 思路:
+     * 目标:通过反射调用ActivityThread的handleCreateService方法创建出Service对象,
+     * private void handleCreateService(CreateServiceData data) {}
+     * 创建出来的Service对象存储在ActivityThread中的mServices成员中,从该成员中取出,供之后使用
+     * final ArrayMap<IBinder, Service> mServices = new ArrayMap<>();
+     * <p>
+     * 1.创建CreateServiceData对象
+     * static final class CreateServiceData {
+     * IBinder token;
+     * ServiceInfo info;
+     * CompatibilityInfo compatInfo;
+     * Intent intent;
+     * }
+     * CreateServiceData类有四个成员,依次创建它的成员赋值给创建出来的CreateServiceData对象;
+     * 既给它的成员变量赋值.
+     * <p>
+     * 2.调用ActivityThread#handleCreateService(CreateServiceData data){}方法,创建Service对象
+     * <p>
+     * 3.取出创建出来的Service对象;
+     * 创建出来的Service对象存储在ActivityThread类中的mServices成员中,从该成员中取出.存储起来,在之后使用
+     * final ArrayMap<IBinder, Service> mServices = new ArrayMap<>();
      *
      * @param serviceInfo 插件的ServiceInfo
      * @throws Throwable e
@@ -157,7 +177,8 @@ public final class ServiceManager {
         tokenField.setAccessible(true);
         tokenField.set(createServiceData, token);
 
-        //3.写入info对象
+        //3.给serviceInfo.applicationInfo增加必须的属性.
+        // 之前android.content.pm.PackageParser#generateServiceInfo(){}方法,得到的ServiceInfo中 serviceInfo.applicationInfo属性没有值;//TODO:思考一下,是不是跟flag参数有关,目前传递的是flag=0;
         //这个修改是为了loadClass的时候, LoadedApk会是主程序的ClassLoader, 我们选择Hook BaseDexClassLoader的方式加载插件
         serviceInfo.applicationInfo.packageName = UPFApplication.getContext().getPackageName();
 
@@ -167,8 +188,6 @@ public final class ServiceManager {
         serviceInfo.applicationInfo.sourceDir = path;
         serviceInfo.applicationInfo.publicSourceDir = path;
         serviceInfo.applicationInfo.nativeLibraryDir = UPFApplication.getContext().getApplicationInfo().nativeLibraryDir;
-        System.out.println("path:" + path);
-        System.out.println("nativeLibraryDir:" + UPFApplication.getContext().getApplicationInfo().nativeLibraryDir);
 
         //4.给我们创建的createServiceData对象的info字段赋值
         Field infoField = createServiceDataClazz.getDeclaredField("info");
@@ -206,6 +225,7 @@ public final class ServiceManager {
 
         //7.获取存储在ActivityThread的mServices字段里的值
         // handleCreateService方法创建出来的Service对象并没有返回, 而是存储在ActivityThread的mServices字段里面, 这里我们手动把它取出来
+        //final ArrayMap<IBinder, Service> mServices = new ArrayMap<>();
         Field mServicesField = activityThreadClazz.getDeclaredField("mServices");
         mServicesField.setAccessible(true);
         Map mServices = (Map) mServicesField.get(currentActivityThread);
@@ -242,15 +262,18 @@ public final class ServiceManager {
         //2.调用parsePackage获取到apk对象对应的Package对象
         //public Package parsePackage(File packageFile, int flags) {}
         Method parsePackageMethod = packageParserClazz.getDeclaredMethod("parsePackage", File.class, int.class);
+        //PackageParser$Package,Package为PackageParser的静态内部类
+        //public final static class Package {}
         Object packageObj = parsePackageMethod.invoke(packageParser, apkFile, PackageManager.GET_SERVICES);
 
         //3.读取Package对象里面的services字段
-        Field servicesField = packageObj.getClass().getDeclaredField("services");
         //public final ArrayList<Service> services = new ArrayList<Service>(0);
+        Field servicesField = packageObj.getClass().getDeclaredField("services");
         List<?> services = (List<?>) servicesField.get(packageObj);
 
         //4.接下来要做的就是根据这个List<Service> 获取到Service对应的ServiceInfo
-        // 调用generateServiceInfo 方法, 把PackageParser.Service转换成ServiceInfo
+        // 调用generateServiceInfo 方法, 把PackageParser$Service转换成ServiceInfo
+        //public final static class Service extends Component<ServiceIntentInfo> {}
         Class<?> packageParser$ServiceClazz = Class.forName("android.content.pm.PackageParser$Service");
 
         //5.get defaultUserState
@@ -259,12 +282,15 @@ public final class ServiceManager {
 
         //6. get userId
         Class<?> userHandlerClazz = Class.forName("android.os.UserHandle");
+        //public static final int getCallingUserId() {}
         Method getCallingUserIdMethod = userHandlerClazz.getDeclaredMethod("getCallingUserId");
+        getCallingUserIdMethod.setAccessible(true);
         int userId = (Integer) getCallingUserIdMethod.invoke(null);
 
         //7. call generateServiceInfo方法
         // public static final ServiceInfo generateServiceInfo(android.content.pm.PackageParser.Service s, int flags, android.content.pm.PackageUserState state, int userId) {
         Method generateReceiverInfo = packageParserClazz.getDeclaredMethod("generateServiceInfo", packageParser$ServiceClazz, int.class, packageUserStateClazz, int.class);
+        generateReceiverInfo.setAccessible(true);
 
         //8. 解析出intent对应的Service组件
         for (Object service : services) {
