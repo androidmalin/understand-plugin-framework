@@ -178,7 +178,8 @@ public final class ServiceManager {
         tokenField.set(createServiceData, token);
 
         //3.给serviceInfo.applicationInfo增加必须的属性.
-        // 之前android.content.pm.PackageParser#generateServiceInfo(){}方法,得到的ServiceInfo中 serviceInfo.applicationInfo属性没有值;//TODO:思考一下,是不是跟flag参数有关,目前传递的是flag=0;
+        // 之前android.content.pm.PackageParser#generateServiceInfo(){}方法,得到的ServiceInfo中 serviceInfo.applicationInfo属性没有值;
+        // TODO:思考一下,是不是跟flag参数有关,目前传递的是flag=0;
         //这个修改是为了loadClass的时候, LoadedApk会是主程序的ClassLoader, 我们选择Hook BaseDexClassLoader的方式加载插件
         serviceInfo.applicationInfo.packageName = UPFApplication.getContext().getPackageName();
 
@@ -234,7 +235,7 @@ public final class ServiceManager {
         Service service = (Service) mServices.get(token);
 
         //9.获取到之后, 移除这个service, 我们只是借花献佛。
-        //TODO:想想为什么
+        //使用系统的类,来解析.用完后,清除使用过程中产生的额外产物;清理干净;
         mServices.remove(token);
 
         //10.将此Service存储起来
@@ -289,12 +290,12 @@ public final class ServiceManager {
 
         //7. call generateServiceInfo方法
         // public static final ServiceInfo generateServiceInfo(android.content.pm.PackageParser.Service s, int flags, android.content.pm.PackageUserState state, int userId) {
-        Method generateReceiverInfo = packageParserClazz.getDeclaredMethod("generateServiceInfo", packageParser$ServiceClazz, int.class, packageUserStateClazz, int.class);
-        generateReceiverInfo.setAccessible(true);
+        Method generateServiceInfo = packageParserClazz.getDeclaredMethod("generateServiceInfo", packageParser$ServiceClazz, int.class, packageUserStateClazz, int.class);
+        generateServiceInfo.setAccessible(true);
 
         //8. 解析出intent对应的Service组件
         for (Object service : services) {
-            ServiceInfo info = (ServiceInfo) generateReceiverInfo.invoke(packageParser, service, 0, defaultUserState, userId);
+            ServiceInfo info = (ServiceInfo) generateServiceInfo.invoke(packageParser, service, 0, defaultUserState, userId);
             mServiceInfoMap.put(new ComponentName(info.packageName, info.name), info);
         }
     }
