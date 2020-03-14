@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.weishu.upf.demo.app2"
         minSdkVersion 15
-        targetSdkVersion 29
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }

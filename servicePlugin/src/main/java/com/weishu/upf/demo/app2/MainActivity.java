@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         findViewById(R.id.btn1).setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
                 File f = new File("/sdcard/test.apk");
                 Intent intent = new Intent("android.intent.action.VIEW");
@@ -44,7 +45,6 @@ public class MainActivity extends Activity {
         filter.addAction("android.intent.action.PACKAGE_REMOVED");
         filter.addDataScheme("package");
         registerReceiver(this.mReceiver, filter);
-        startService(new Intent(this, MyService.class));
     }
 
     @Override
