@@ -32,6 +32,7 @@ public final class ServiceManager {
 
     private static volatile ServiceManager sInstance;
 
+    // 动态创建的Service信息,调用ActivityThread#handleCreateService(CreateServiceData data){}方法,创建Service对象
     private volatile Map<String, Service> mServiceMap = new HashMap<>();
 
     // 存储插件的Service信息
@@ -204,6 +205,7 @@ public final class ServiceManager {
         //}
         Class<?> compatibilityClazz = Class.forName("android.content.res.CompatibilityInfo");
         Field defaultCompatibilityField = compatibilityClazz.getDeclaredField("DEFAULT_COMPATIBILITY_INFO");
+        defaultCompatibilityField.setAccessible(true);
         Object defaultCompatibility = defaultCompatibilityField.get(null);
 
         //5.2赋值
@@ -260,9 +262,10 @@ public final class ServiceManager {
         Class<?> packageParserClazz = Class.forName("android.content.pm.PackageParser");
         Object packageParser = packageParserClazz.newInstance();
 
-        //2.调用parsePackage获取到apk对象对应的Package对象
+        //2.调用parsePackage获取到插件apkFile对应的Package对象
         //public Package parsePackage(File packageFile, int flags) {}
         Method parsePackageMethod = packageParserClazz.getDeclaredMethod("parsePackage", File.class, int.class);
+        parsePackageMethod.setAccessible(true);
         //PackageParser$Package,Package为PackageParser的静态内部类
         //public final static class Package {}
         Object packageObj = parsePackageMethod.invoke(packageParser, apkFile, PackageManager.GET_SERVICES);
@@ -270,6 +273,7 @@ public final class ServiceManager {
         //3.读取Package对象里面的services字段
         //public final ArrayList<Service> services = new ArrayList<Service>(0);
         Field servicesField = packageObj.getClass().getDeclaredField("services");
+        servicesField.setAccessible(true);
         List<?> services = (List<?>) servicesField.get(packageObj);
 
         //4.接下来要做的就是根据这个List<Service> 获取到Service对应的ServiceInfo
