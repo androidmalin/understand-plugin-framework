@@ -13,3 +13,5 @@ proguard/
 captures/
 *.iml
 *.sh
+.settings
+.classpath

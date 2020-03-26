@@ -15,12 +15,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ActionActivity">
-            <intent-filter>
-                <action android:name=".ActionActivity" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
 
         <service android:name=".TargetService1" />
         <service android:name=".TargetService2" />
